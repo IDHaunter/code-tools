@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder / Decoder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="h-full bg-slate-900 text-slate-100 flex flex-col p-4 md:p-6 box-border m-0">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-4 shrink-0">
+        <h1 class="text-xl md:text-2xl font-bold tracking-tight text-indigo-400 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Base64 Encoder & Decoder
+        </h1>
+        <span class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">UTF-8 Supported</span>
+    </header>
+
+    <!-- Main Content Container (Grid) -->
+    <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+        
+        <!-- Left Section: Plain Text -->
+        <div class="flex flex-col gap-3 min-h-0">
+            <section class="flex-1 flex flex-col bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg min-h-0">
+                <div class="flex justify-between items-center mb-2 shrink-0">
+                    <label for="text-input" class="text-sm font-medium text-slate-300">Plain Text</label>
+                    <div class="flex items-center gap-2">
+                        <button onclick="copyText()" id="copy-text-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            Copy
+                        </button>
+                        <button onclick="clearText()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors">Clear</button>
+                    </div>
+                </div>
+                <textarea 
+                    id="text-input" 
+                    placeholder="Type plain text here..." 
+                    class="flex-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none font-mono text-sm"
+                ></textarea>
+                <div id="text-error" class="text-xs text-rose-400 mt-1 h-4 shrink-0"></div>
+            </section>
+            <button onclick="forceEncode()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
+                Encode to Base64 &rarr;
+            </button>
+        </div>
+
+        <!-- Right Section: Base64 -->
+        <div class="flex flex-col gap-3 min-h-0">
+            <section class="flex-1 flex flex-col bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg min-h-0">
+                <div class="flex justify-between items-center mb-2 shrink-0">
+                    <label for="base64-input" class="text-sm font-medium text-slate-300">Base64</label>
+                    <div class="flex items-center gap-2">
+                        <button onclick="copyBase64()" id="copy-base64-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            Copy
+                        </button>
+                        <button onclick="clearBase64()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors">Clear</button>
+                    </div>
+                </div>
+                <textarea 
+                    id="base64-input" 
+                    placeholder="Type or paste Base64 here..." 
+                    class="flex-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
+                ></textarea>
+                <div id="base64-error" class="text-xs text-rose-400 mt-1 h-4 shrink-0"></div>
+            </section>
+            <button onclick="forceDecode()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
+                &larr; Decode from Base64
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Script Logic with Unicode Support -->
+    <script>
+        function utf8ToBase64(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+        }
+
+        function base64ToUtf8(str) {
+            try {
+                return decodeURIComponent(atob(str).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            } catch (e) {
+                throw new Error("Invalid Base64 string");
+            }
+        }
+
+        function forceEncode() {
+            const textEl = document.getElementById('text-input');
+            const base64El = document.getElementById('base64-input');
+            const textErrorEl = document.getElementById('text-error');
+            
+            textErrorEl.textContent = '';
+            document.getElementById('base64-error').textContent = '';
+
+            try {
+                base64El.value = utf8ToBase64(textEl.value);
+            } catch (e) {
+                textErrorEl.textContent = "Error encoding text.";
+            }
+        }
+
+        function forceDecode() {
+            const textEl = document.getElementById('text-input');
+            const base64El = document.getElementById('base64-input');
+            const base64ErrorEl = document.getElementById('base64-error');
+            
+            base64ErrorEl.textContent = '';
+            document.getElementById('text-error').textContent = '';
+
+            try {
+                textEl.value = base64ToUtf8(base64El.value.trim());
+            } catch (e) {
+                base64ErrorEl.textContent = "Invalid Base64 format for decoding.";
+            }
+        }
+
+        function clearText() {
+            document.getElementById('text-input').value = '';
+            document.getElementById('text-error').textContent = '';
+        }
+
+        function clearBase64() {
+            document.getElementById('base64-input').value = '';
+            document.getElementById('base64-error').textContent = '';
+        }
+
+        function copyText() {
+            const textEl = document.getElementById('text-input');
+            if (!textEl.value) return;
+
+            navigator.clipboard.writeText(textEl.value).then(() => {
+                const btn = document.getElementById('copy-text-btn');
+                const originalText = btn.innerHTML;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy');
+            });
+        }
+
+        function copyBase64() {
+            const base64El = document.getElementById('base64-input');
+            if (!base64El.value) return;
+
+            navigator.clipboard.writeText(base64El.value).then(() => {
+                const btn = document.getElementById('copy-base64-btn');
+                const originalText = btn.innerHTML;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy');
+            });
+        }
+    </script>
+</body>
+</html>
