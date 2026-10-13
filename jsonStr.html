@@ -20,23 +20,36 @@
             </svg>
             JSON Escaper & Unescaper
         </h1>
-        <span class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">Stringify / Parse</span>
+        <span class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">Stringify / Parse / Format</span>
     </header>
 
     <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
         
+        <!-- Left Column: Raw JSON / Text -->
         <div class="flex flex-col gap-3 min-h-0">
             <section class="flex-1 flex flex-col bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg min-h-0">
                 <div class="flex justify-between items-center mb-2 shrink-0">
                     <label for="raw-input" class="text-sm font-medium text-slate-300">Raw JSON / Text</label>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                        <button onclick="compressJSON()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition-colors border border-slate-600 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+                            </svg>
+                            Compress
+                        </button>
+                        <button onclick="beautifyJSON()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition-colors border border-slate-600 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                            Beautify
+                        </button>
                         <button onclick="copyRaw()" id="copy-raw-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                             </svg>
                             Copy
                         </button>
-                        <button onclick="clearRaw()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors">Clear</button>
+                        <button onclick="clearRaw()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors ml-1">Clear</button>
                     </div>
                 </div>
                 <textarea 
@@ -46,11 +59,13 @@
                 ></textarea>
                 <div id="raw-error" class="text-xs text-rose-400 mt-1 h-4 shrink-0"></div>
             </section>
+            
             <button onclick="forceEscape()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
                 Escape JSON &rarr;
             </button>
         </div>
 
+        <!-- Right Column: Escaped JSON String -->
         <div class="flex flex-col gap-3 min-h-0">
             <section class="flex-1 flex flex-col bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg min-h-0">
                 <div class="flex justify-between items-center mb-2 shrink-0">
@@ -72,6 +87,7 @@
                 ></textarea>
                 <div id="escaped-error" class="text-xs text-rose-400 mt-1 h-4 shrink-0"></div>
             </section>
+            
             <button onclick="forceUnescape()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
                 &larr; Unescape JSON
             </button>
@@ -80,6 +96,40 @@
     </main>
 
     <script>
+        // Compress JSON: removes all unnecessary whitespaces and newlines
+        function compressJSON() {
+            const rawEl = document.getElementById('raw-input');
+            const rawErrorEl = document.getElementById('raw-error');
+            rawErrorEl.textContent = '';
+
+            const val = rawEl.value.trim();
+            if (!val) return;
+
+            try {
+                const parsed = JSON.parse(val);
+                rawEl.value = JSON.stringify(parsed);
+            } catch (e) {
+                rawErrorEl.textContent = "Invalid JSON for compression: " + e.message;
+            }
+        }
+
+        // Beautify JSON: formats JSON with 2-space indentation
+        function beautifyJSON() {
+            const rawEl = document.getElementById('raw-input');
+            const rawErrorEl = document.getElementById('raw-error');
+            rawErrorEl.textContent = '';
+
+            const val = rawEl.value.trim();
+            if (!val) return;
+
+            try {
+                const parsed = JSON.parse(val);
+                rawEl.value = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                rawErrorEl.textContent = "Invalid JSON for formatting: " + e.message;
+            }
+        }
+
         function forceEscape() {
             const rawEl = document.getElementById('raw-input');
             const escapedEl = document.getElementById('escaped-input');
@@ -164,7 +214,22 @@
                     btn.innerHTML = originalText;
                 }, 2000);
             }).catch(() => {
-                alert('Failed to copy');
+                const textarea = document.createElement('textarea');
+                textarea.value = rawEl.value;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    const btn = document.getElementById('copy-raw-btn');
+                    const originalText = btn.innerHTML;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy', err);
+                }
+                document.body.removeChild(textarea);
             });
         }
 
@@ -180,7 +245,22 @@
                     btn.innerHTML = originalText;
                 }, 2000);
             }).catch(() => {
-                alert('Failed to copy');
+                const textarea = document.createElement('textarea');
+                textarea.value = escapedEl.value;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    const btn = document.getElementById('copy-escaped-btn');
+                    const originalText = btn.innerHTML;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy', err);
+                }
+                document.body.removeChild(textarea);
             });
         }
     </script>
