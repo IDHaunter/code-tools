@@ -4,175 +4,370 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base64 Encoder / Decoder</title>
-    <!-- Tailwind CSS CDN -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
+        tailwind.config = { darkMode: 'class' };
     </script>
 </head>
+
 <body class="h-full bg-slate-900 text-slate-100 flex flex-col p-4 md:p-6 box-border m-0">
 
-    <!-- Header -->
     <header class="flex items-center justify-between mb-4 shrink-0">
         <h1 class="text-xl md:text-2xl font-bold tracking-tight text-indigo-400 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Base64 Encoder & Decoder
+            Base64 Encoder &amp; Decoder
         </h1>
-        <span class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">UTF-8 Supported</span>
+        <span class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
+            UTF-8 Supported
+        </span>
     </header>
 
-    <!-- Main Content Container (Grid) -->
     <main class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
-        
-        <!-- Left Section: Plain Text -->
+
+        <!-- Left: Plain Text -->
         <div class="flex flex-col gap-3 min-h-0">
             <section class="flex-1 flex flex-col bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg min-h-0">
-                <div class="flex justify-between items-center mb-2 shrink-0">
-                    <label for="text-input" class="text-sm font-medium text-slate-300">Plain Text</label>
-                    <div class="flex items-center gap-2">
-                        <button onclick="copyText()" id="copy-text-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                            </svg>
+
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2 shrink-0">
+                    <label for="text-input" class="text-sm font-medium text-slate-300">
+                        Plain Text
+                    </label>
+
+                    <div class="flex flex-wrap items-center gap-2">
+
+                        <div id="json-actions" class="hidden items-center gap-1.5 flex-wrap justify-end">
+                            <button type="button" onclick="formatJson(false)"
+                                class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition-colors border border-slate-600 flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3 w-3 text-emerald-400"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M4 8h16M4 16h16" />
+                                </svg>
+                                Compress
+                            </button>
+
+                            <button type="button" onclick="formatJson(true)"
+                                class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded transition-colors border border-slate-600 flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-3 w-3 text-indigo-400"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                                </svg>
+                                Beautify
+                            </button>
+                        </div>
+
+                        <button type="button" onclick="copyText()" id="copy-text-btn"
+                            class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors">
                             Copy
                         </button>
-                        <button onclick="clearText()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors">Clear</button>
+
+                        <button type="button" onclick="clearText()"
+                            class="text-xs text-slate-400 hover:text-rose-400 transition-colors">
+                            Clear
+                        </button>
                     </div>
                 </div>
-                <textarea 
-                    id="text-input" 
-                    placeholder="Type plain text here..." 
-                    class="flex-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none font-mono text-sm"
-                ></textarea>
-                <div id="text-error" class="text-xs text-rose-400 mt-1 h-4 shrink-0"></div>
+
+                <textarea id="text-input"
+                    placeholder="Type plain text or JSON here..."
+                    spellcheck="false"
+                    class="flex-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none font-mono text-sm"></textarea>
+
+                <div id="text-error" role="status"
+                    class="text-xs text-rose-400 mt-1 min-h-4 shrink-0"></div>
             </section>
-            <button onclick="forceEncode()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
+
+            <button type="button" onclick="forceEncode()"
+                class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
                 Encode to Base64 &rarr;
             </button>
         </div>
 
-        <!-- Right Section: Base64 -->
+        <!-- Right: Base64 / JWT -->
         <div class="flex flex-col gap-3 min-h-0">
             <section class="flex-1 flex flex-col bg-slate-800 rounded-xl border border-slate-700 p-4 shadow-lg min-h-0">
-                <div class="flex justify-between items-center mb-2 shrink-0">
-                    <label for="base64-input" class="text-sm font-medium text-slate-300">Base64</label>
-                    <div class="flex items-center gap-2">
-                        <button onclick="copyBase64()" id="copy-base64-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                            </svg>
+
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2 shrink-0">
+                    <label for="base64-input" class="text-sm font-medium text-slate-300">
+                        Base64
+                    </label>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div id="jwt-actions" class="hidden items-center gap-2">
+                            <button type="button" onclick="extractJwtPart(0)"
+                                class="text-xs bg-violet-700 hover:bg-violet-600 text-white px-2.5 py-1 rounded transition-colors">
+                                Extract Header
+                            </button>
+                            <button type="button" onclick="extractJwtPart(1)"
+                                class="text-xs bg-violet-700 hover:bg-violet-600 text-white px-2.5 py-1 rounded transition-colors">
+                                Extract Payload
+                            </button>
+                        </div>
+
+                        <button type="button" onclick="copyBase64()" id="copy-base64-btn"
+                            class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition-colors">
                             Copy
                         </button>
-                        <button onclick="clearBase64()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors">Clear</button>
+
+                        <button type="button" onclick="clearBase64()"
+                            class="text-xs text-slate-400 hover:text-rose-400 transition-colors">
+                            Clear
+                        </button>
                     </div>
                 </div>
-                <textarea 
-                    id="base64-input" 
-                    placeholder="Type or paste Base64 here..." 
-                    class="flex-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
-                ></textarea>
-                <div id="base64-error" class="text-xs text-rose-400 mt-1 h-4 shrink-0"></div>
+
+                <textarea id="base64-input"
+                    placeholder="Type or paste Base64 / JWT here..."
+                    spellcheck="false"
+                    class="flex-1 w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"></textarea>
+
+                <div id="base64-error" role="status"
+                    class="text-xs text-rose-400 mt-1 min-h-4 shrink-0"></div>
             </section>
-            <button onclick="forceDecode()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
+
+            <button type="button" onclick="forceDecode()"
+                class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow transition-colors shrink-0">
                 &larr; Decode from Base64
             </button>
         </div>
-
     </main>
 
-    <!-- Script Logic with Unicode Support -->
     <script>
+        const textEl = document.getElementById('text-input');
+        const base64El = document.getElementById('base64-input');
+        const textErrorEl = document.getElementById('text-error');
+        const base64ErrorEl = document.getElementById('base64-error');
+        const jsonActionsEl = document.getElementById('json-actions');
+        const jwtActionsEl = document.getElementById('jwt-actions');
+
+        // Encode UTF-8 text as standard Base64.
         function utf8ToBase64(str) {
-            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-                return String.fromCharCode('0x' + p1);
-            }));
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+
+            for (const byte of bytes) {
+                binary += String.fromCharCode(byte);
+            }
+
+            return btoa(binary);
         }
 
+        // Decode standard Base64 as UTF-8 text.
         function base64ToUtf8(str) {
             try {
-                return decodeURIComponent(atob(str).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
+                const binary = atob(str.replace(/\s/g, ''));
+                const bytes = Uint8Array.from(
+                    binary,
+                    char => char.charCodeAt(0)
+                );
+
+                return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
             } catch (e) {
-                throw new Error("Invalid Base64 string");
+                throw new Error('Invalid Base64 string');
             }
         }
 
-        function forceEncode() {
-            const textEl = document.getElementById('text-input');
-            const base64El = document.getElementById('base64-input');
-            const textErrorEl = document.getElementById('text-error');
-            
+        // Decode a Base64URL segment, as used by JWT.
+        function base64UrlToUtf8(segment) {
+            if (!/^[A-Za-z0-9_-]*$/.test(segment)) {
+                throw new Error('Invalid Base64URL segment');
+            }
+
+            const base64 = segment
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            return base64ToUtf8(
+                base64 + '='.repeat((4 - base64.length % 4) % 4)
+            );
+        }
+
+        // Return the parsed JSON value, or null if the input is not valid JSON.
+        function parseJson(value) {
+            try {
+                return JSON.parse(value);
+            } catch {
+                return null;
+            }
+        }
+
+        // Check whether a string contains valid JSON.
+        // JSON null is also valid, so parsing success is tracked separately.
+        function isValidJson(value) {
+            try {
+                JSON.parse(value);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // Validate JWT structure and JSON header/payload.
+        function getJwtParts(value) {
+            const token = value.trim();
+            const parts = token.split('.');
+
+            if (parts.length !== 3) {
+                return null;
+            }
+
+            try {
+                const header = JSON.parse(base64UrlToUtf8(parts[0]));
+                const payload = JSON.parse(base64UrlToUtf8(parts[1]));
+
+                // A JWT header must be a JSON object.
+                if (
+                    header === null ||
+                    typeof header !== 'object' ||
+                    Array.isArray(header)
+                ) {
+                    return null;
+                }
+
+                // A JWT payload must be a JSON object.
+                if (
+                    payload === null ||
+                    typeof payload !== 'object' ||
+                    Array.isArray(payload)
+                ) {
+                    return null;
+                }
+
+                // The signature segment may be empty for an unsecured JWT.
+                if (!/^[A-Za-z0-9_-]*$/.test(parts[2])) {
+                    return null;
+                }
+
+                return parts;
+            } catch {
+                return null;
+            }
+        }
+
+        // Update contextual actions whenever the inputs change.
+        function updateActions() {
+            const validJson = isValidJson(textEl.value);
+            jsonActionsEl.classList.toggle('hidden', !validJson);
+            jsonActionsEl.classList.toggle('flex', validJson);
+
+            const jwtParts = getJwtParts(base64El.value);
+            jwtActionsEl.classList.toggle('hidden', !jwtParts);
+            jwtActionsEl.classList.toggle('flex', !!jwtParts);
+        }
+
+        // Minify or pretty-print valid JSON.
+        function formatJson(pretty) {
             textErrorEl.textContent = '';
-            document.getElementById('base64-error').textContent = '';
+
+            try {
+                const parsed = JSON.parse(textEl.value);
+                textEl.value = pretty
+                    ? JSON.stringify(parsed, null, 2)
+                    : JSON.stringify(parsed);
+
+                updateActions();
+            } catch {
+                textErrorEl.textContent = 'Invalid JSON.';
+                updateActions();
+            }
+        }
+
+        // Extract the encoded JWT header or payload into the Base64 field.
+        function extractJwtPart(index) {
+            base64ErrorEl.textContent = '';
+
+            const parts = getJwtParts(base64El.value);
+
+            if (!parts) {
+                base64ErrorEl.textContent = 'Invalid JWT structure.';
+                updateActions();
+                return;
+            }
+
+            base64El.value = parts[index];
+            updateActions();
+        }
+
+        function forceEncode() {
+            textErrorEl.textContent = '';
+            base64ErrorEl.textContent = '';
 
             try {
                 base64El.value = utf8ToBase64(textEl.value);
-            } catch (e) {
-                textErrorEl.textContent = "Error encoding text.";
+                updateActions();
+            } catch {
+                textErrorEl.textContent = 'Error encoding text.';
             }
         }
 
         function forceDecode() {
-            const textEl = document.getElementById('text-input');
-            const base64El = document.getElementById('base64-input');
-            const base64ErrorEl = document.getElementById('base64-error');
-            
             base64ErrorEl.textContent = '';
-            document.getElementById('text-error').textContent = '';
+            textErrorEl.textContent = '';
 
             try {
                 textEl.value = base64ToUtf8(base64El.value.trim());
-            } catch (e) {
-                base64ErrorEl.textContent = "Invalid Base64 format for decoding.";
+                updateActions();
+            } catch {
+                base64ErrorEl.textContent =
+                    'Invalid Base64 format for decoding.';
             }
         }
 
         function clearText() {
-            document.getElementById('text-input').value = '';
-            document.getElementById('text-error').textContent = '';
+            textEl.value = '';
+            textErrorEl.textContent = '';
+            updateActions();
         }
 
         function clearBase64() {
-            document.getElementById('base64-input').value = '';
-            document.getElementById('base64-error').textContent = '';
+            base64El.value = '';
+            base64ErrorEl.textContent = '';
+            updateActions();
+        }
+
+        async function copyToClipboard(element, buttonId) {
+            if (!element.value) {
+                return;
+            }
+
+            const btn = document.getElementById(buttonId);
+            const originalText = btn.textContent;
+
+            try {
+                await navigator.clipboard.writeText(element.value);
+                btn.textContent = 'Copied!';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            } catch {
+                alert('Failed to copy. Clipboard access may require HTTPS.');
+            }
         }
 
         function copyText() {
-            const textEl = document.getElementById('text-input');
-            if (!textEl.value) return;
-
-            navigator.clipboard.writeText(textEl.value).then(() => {
-                const btn = document.getElementById('copy-text-btn');
-                const originalText = btn.innerHTML;
-                btn.textContent = 'Copied!';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                }, 2000);
-            }).catch(err => {
-                alert('Failed to copy');
-            });
+            return copyToClipboard(textEl, 'copy-text-btn');
         }
 
         function copyBase64() {
-            const base64El = document.getElementById('base64-input');
-            if (!base64El.value) return;
-
-            navigator.clipboard.writeText(base64El.value).then(() => {
-                const btn = document.getElementById('copy-base64-btn');
-                const originalText = btn.innerHTML;
-                btn.textContent = 'Copied!';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                }, 2000);
-            }).catch(err => {
-                alert('Failed to copy');
-            });
+            return copyToClipboard(base64El, 'copy-base64-btn');
         }
+
+        // React to manual typing and pasting.
+        textEl.addEventListener('input', updateActions);
+        base64El.addEventListener('input', updateActions);
+
+        // Initialize the UI.
+        updateActions();
     </script>
 </body>
 </html>
